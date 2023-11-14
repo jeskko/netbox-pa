@@ -4,9 +4,10 @@ def ip_addr_to_object(i):
     """Convert IP address from Netbox data to something that resembles more a firewall object."""
 
     res={}
+    res["fieldtype"]="ip-netmask"
     # strip prefix length as we're ip addresses    
     addr=i.address.split("/")[0]
-    res["ip-netmask"]=addr
+    res["value"]=addr
     # naming logic
     # use custom name
     if i.custom_fields["fw_address"]!=None:
@@ -20,31 +21,30 @@ def ip_addr_to_object(i):
             name=f"ip-{addr}"
     res["name"]=name        
     res["description"]=i.description
-    res["tag"]={"member": [nep.config.conf["panorama"]["tag"]]}
+    res["tag"]=1
     if i.custom_fields["fw_obj_distrib"][0]=="Shared":
         res["location"]="shared"
     else:
-        res["location"]="device-group"
         # easy if only 1 device group
         if len(i.custom_fields["fw_obj_distrib"])==1:
-            res["device-group"]=i.custom_fields["fw_obj_distrib"][0]
+            res["location"]=i.custom_fields["fw_obj_distrib"][0]
         else:
             # now we need to make many new objects
             reslist=[]
             for d in i.custom_fields["fw_obj_distrib"]:
-                res["device-group"]=d
-                reslist.append(res)
+                res["location"]=d
+                reslist.append(res.copy())
             res=reslist
-    
     return (res)
 
 def ip_range_to_object(i):
     """Convert IP range from Netbox data to something that resembles more a firewall object."""
 
     res=dict()
+    res["fieldtype"]="ip-range"
     addr1=i.start_address.split("/")[0]
     addr2=i.end_address.split("/")[0]
-    res["ip-range"]=f"{addr1}-{addr2}"
+    res["value"]=f"{addr1}-{addr2}"
     # use custom name
     if i.custom_fields["fw_address"]!=None:
         name=i.custom_fields["fw_address"].replace("{ip}",f"{addr1}-{addr2}")
@@ -53,19 +53,18 @@ def ip_range_to_object(i):
     res["name"]=name
 
     res["description"]=i.description
-    res["tag"]={"member": [nep.config.conf["panorama"]["tag"]]}
+    res["tag"]=1
     if i.custom_fields["fw_obj_distrib"][0]=="Shared":
         res["location"]="shared"
     else:
-        res["location"]="device-group"
         # easy if only 1 device group
         if len(i.custom_fields["fw_obj_distrib"])==1:
-            res["device-group"]=i.custom_fields["fw_obj_distrib"][0]
+            res["location"]=i.custom_fields["fw_obj_distrib"][0]
         else:
             # now we need to make many new objects
             reslist=[]
             for d in i.custom_fields["fw_obj_distrib"]:
-                res["device-group"]=d
+                res["location"]=d
                 reslist.append(res)
             res=reslist
     return(res)
@@ -74,10 +73,11 @@ def prefix_to_object(i):
     """Convert prefix from Netbox data to something that resembles more a firewall object."""
     
     res={}
+    res["fieldtype"]="ip-netmask"
     # strip prefix length as we're ip addresses    
     addr=i.prefix.split("/")[0]
     prefix=i.prefix.split("/")[1]
-    res["ip-netmask"]=f"{addr}/{prefix}"
+    res["value"]=f"{addr}/{prefix}"
     # use custom name
     if i.custom_fields["fw_address"]!=None:
         name=i.custom_fields["fw_address"].replace("{ip}",f"{addr}-{prefix}")
@@ -86,19 +86,18 @@ def prefix_to_object(i):
     res["name"]=name
 
     res["description"]=i.description
-    res["tag"]={"member": [nep.config.conf["panorama"]["tag"]]}
+    res["tag"]=1
     if i.custom_fields["fw_obj_distrib"][0]=="Shared":
         res["location"]="shared"
     else:
-        res["location"]="device-group"
         # easy if only 1 device group
         if len(i.custom_fields["fw_obj_distrib"])==1:
-            res["device-group"]=i.custom_fields["fw_obj_distrib"][0]
+            res["location"]=i.custom_fields["fw_obj_distrib"][0]
         else:
             # now we need to make many new objects
             reslist=[]
             for d in i.custom_fields["fw_obj_distrib"]:
-                res["device-group"]=d
+                res["location"]=d
                 reslist.append(res)
             res=reslist
     return(res)

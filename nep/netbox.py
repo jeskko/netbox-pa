@@ -1,5 +1,8 @@
 import pynetbox, requests
 import nep.config
+import urllib3
+
+urllib3.disable_warnings()
 
 session=requests.Session()
 session.verify=False
