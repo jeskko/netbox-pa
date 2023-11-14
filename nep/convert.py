@@ -14,12 +14,12 @@ def ip_addr_to_object(i):
         name=i.custom_fields["fw_address"].replace("{ip}",f"{addr}")
     else:
         # use fqdn + address if custom name is empty
-        if i.dns_name!=None:
+        if len(i.dns_name)>0:
             name=f"{i.dns_name}-{addr}"
         else:
         # if fqdn is empty, use "ip-1.2.3.4" format
             name=f"ip-{addr}"
-    res["name"]=name        
+    res["name"]=name.replace(":","_")   
     res["description"]=i.description
     res["tag"]=1
     if i.custom_fields["fw_obj_distrib"][0]=="Shared":
@@ -50,7 +50,7 @@ def ip_range_to_object(i):
         name=i.custom_fields["fw_address"].replace("{ip}",f"{addr1}-{addr2}")
     else:
         name=f"range-{addr1}-{addr2}"
-    res["name"]=name
+    res["name"]=name.replace(":","_")
 
     res["description"]=i.description
     res["tag"]=1
@@ -83,7 +83,7 @@ def prefix_to_object(i):
         name=i.custom_fields["fw_address"].replace("{ip}",f"{addr}-{prefix}")
     else:
         name=f"range-{addr}-{prefix}"
-    res["name"]=name
+    res["name"]=name.replace(":","_")
 
     res["description"]=i.description
     res["tag"]=1
