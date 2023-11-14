@@ -12,6 +12,13 @@ import panos
 import panos.panorama
 import panos.objects
 
+import argparse
+
+argParser=argparse.ArgumentParser()
+argParser.add_argument("--slay", help="Remove orphaned objects from Panorama", action="count", default=0)
+
+args=argParser.parse_args()
+
 for i in nb_fetch_ip_addr():
     obj=ip_addr_to_object(i)
     nep.db.db_push(0,obj)
@@ -26,7 +33,7 @@ for i in nb_fetch_prefix():
         
 pan=panos.panorama.Panorama(hostname=nep.config.conf["panorama"]["host"], api_key=nep.config.conf["panorama"]["token"])
 
-addr=panos.objects.AddressObject.refreshall(pan,add=False)
+addr=panos.objects.AddressObject.refreshall(pan)
 for x in addr:
     tag=0
     if x.tag != None:
@@ -40,11 +47,10 @@ for x in addr:
                      "tag": tag,
                      "location": "shared"})
 
-# list of device groups. If you have devices that are outside any group, you might be in trouble.
-d=pan.refresh_devices()
+d=panos.panorama.DeviceGroup.refreshall(pan)
 
 for i in d:
-    addr=panos.objects.AddressObject.refreshall(i,add=False)
+    addr=panos.objects.AddressObject.refreshall(i)
     for x in addr:
         tag=0
         if x.tag != None:
@@ -71,8 +77,7 @@ for i in nep.db.db_nbobjects("shared"):
     pan.add(ao)
 obj[0].create_similar()
 
-# list of device groups. If you have devices that are outside any group, you might be in trouble.
-d=pan.refresh_devices()
+d=panos.panorama.DeviceGroup.refreshall(pan)
 # device groups
 for n in d:
     obj=[]
@@ -80,12 +85,29 @@ for n in d:
         ao=panos.objects.AddressObject(i["name"],i["value"],i["fieldtype"],i["description"],[nep.config.conf["panorama"]["tag"]])
         obj.append(ao)
         n.add(ao)
-    # for some incomprehensible reason create_similar does not work with device groups
-    # obj[0].create_similar()
+    if len(obj)>0: 
+        obj[0].create_similar()
     
-    # so need to use slower method of creating each object separately
-    for i in obj:
-        i.create()
- 
 # check for orphan objects without counterparts in Netbox
-nep.db.db_nbmissing()
+r=nep.db.db_nbmissing()
+if len(r)>0:
+    print("These objects are missing from Netbox but do have the Netbox tag. Re-run with the --slay parameter to delete them.")
+    for i in r:
+        print(i[0],i[1],i[2])
+    
+
+if args.slay:
+    # check shared first
+    r=nep.db.db_nbmissing("shared")    
+    for i in r:
+        ao=pan.find(i[0])
+        print(f"Deleting {ao}")
+        ao.delete()
+    # then device groups
+    d=panos.panorama.DeviceGroup.refreshall(pan)
+    for n in d:
+        r=nep.db.db_nbmissing(n.name)
+        for i in r:
+            ao=n.find(i[0])
+            print(f"Deleting {ao}")
+            ao.delete()

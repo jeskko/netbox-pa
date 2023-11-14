@@ -50,13 +50,12 @@ def db_nbobjects(location):
                     "description": i[3]})
     return res
 
-def db_nbmissing():
+def db_nbmissing(location=None):
     """Check for objects with netbox tag, but which are missing from Netbox"""
-    
-    sel="SELECT name,value,location from object where system=1 AND tag=1 and (name,location) NOT IN (SELECT name,location FROM object WHERE system=0);"
-    r=cursor.execute(sel).fetchall()
-    if len(r)>0:
-        print("These items are on Panorama but are missing from Netbox:")
-        for i in r:
-            print(i[0],i[1],i[2])
-        
+    if location==None:
+        sel="SELECT name,value,location from object where system=1 AND tag=1 and (name,location) NOT IN (SELECT name,location FROM object WHERE system=0);"
+        r=cursor.execute(sel).fetchall()
+    else:
+        sel="SELECT name,value,location from object where system=1 AND tag=1 AND location=? and (name,location) NOT IN (SELECT name,location FROM object WHERE system=0);"
+        r=cursor.execute(sel,(location,)).fetchall()
+    return r
