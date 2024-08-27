@@ -19,7 +19,7 @@ def ip_addr_to_object(i):
         else:
         # if fqdn is empty, use "ip-1.2.3.4" format
             name=f"ip-{addr}"
-    res["name"]=name.replace(":","_")   
+    res["name"]=nep.config.conf["panorama"]["prefix"]+"_"+name.replace(":","_")   
     res["description"]=i.description
     res["tag"]=1
     if i.custom_fields["fw_obj_distrib"][0]=="Shared":
@@ -50,7 +50,7 @@ def ip_range_to_object(i):
         name=i.custom_fields["fw_address"].replace("{ip}",f"{addr1}-{addr2}")
     else:
         name=f"range-{addr1}-{addr2}"
-    res["name"]=name.replace(":","_")
+    res["name"]=nep.config.conf["panorama"]["prefix"]+"_"+name.replace(":","_")
 
     res["description"]=i.description
     res["tag"]=1
@@ -83,7 +83,7 @@ def prefix_to_object(i):
         name=i.custom_fields["fw_address"].replace("{ip}",f"{addr}-{prefix}")
     else:
         name=f"range-{addr}-{prefix}"
-    res["name"]=name.replace(":","_")
+    res["name"]=nep.config.conf["panorama"]["prefix"]+"_"+name.replace(":","_")
 
     res["description"]=i.description
     res["tag"]=1

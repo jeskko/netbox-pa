@@ -6,3 +6,4 @@ panorama:
   url: https://localhost
   token: 715517
   tag: netbox
+  prefix: nb
