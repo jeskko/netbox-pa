@@ -1,4 +1,6 @@
-A hack for synchronizing address objects from Netbox data to Panorama.
+A hack for synchronizing address items from Netbox data to Panorama and Juniper Mist.
+
+Panorama:
 
 Add customization to netbox:
  - Custom field choices: fw_devgroups, add your device groups and "shared" here
@@ -10,3 +12,8 @@ fw_obj_distrib,"ipam.ipaddress,ipam.prefix,ipam.iprange",Distribution,Firewall O
 ```
  
 Will try to sync anything that has the fw_obj_distrib set to the panorama.
+
+Mist:
+
+Add tags to vlans, configure tags in config.yaml
+

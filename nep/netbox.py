@@ -27,3 +27,11 @@ def nb_fetch_prefix():
     i=nb.ipam.prefixes.all()
     prefixes = list(filter(lambda p: p.custom_fields['fw_obj_distrib'] != None, i))
     return prefixes
+
+def nb_fetch_vlan(tag):
+    """Fetch all vlans that have a tag"""
+    i=nb.ipam.vlans.filter(tag=tag)
+    vlans=[]
+    for v in i:
+        vlans.append((v.vid, v.name))
+    return vlans

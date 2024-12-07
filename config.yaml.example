@@ -7,3 +7,14 @@ panorama:
   token: 715517
   tag: netbox
   prefix: nb
+
+mist:
+host: api.eu.mist.com
+token: XXX
+org_id: x-y-z-q
+prefix: nb
+template_mapping:
+  - name: abc
+    nb_tag: abc
+  - name: qwe
+    nb_tag: qwe 
