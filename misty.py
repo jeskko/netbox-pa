@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 #
-# VERY MUCH IN PROGRESS, DOES SOMETHING BUT NOT NEARLY FINISHED
+# VERY MUCH IN PROGRESS, DOES SOMETHING BUT NOT NEARLY COMPLETE
 
 import nep.config
 nep.config.load_conf()
@@ -35,7 +35,7 @@ for i in nep.config.conf["mist"]["template_mapping"]:
     
     r=nb_fetch_vlan(tag)
     for j in r:
-        db_push_vlan(0,tmpl_name,tmpl_id,j[1],j[0])
+        db_push_vlan(0,tmpl_name,tmpl_id,nep.config.conf["mist"]["prefix"]+j[1],j[0])
 
 r=db_find_missing_vlan()
 print("Networks missing from Mist:")
@@ -46,7 +46,7 @@ print("Updating missing vlans to mist")
 
 for i in r:
     x=mistapi.api.v1.orgs.networktemplates.getOrgNetworkTemplate(apisession,org_id=nep.config.conf["mist"]["org_id"], networktemplate_id=i["tmpl_id"]).data
-    j={nep.config.conf["mist"]["prefix"]+i['vlan_name']: {'vlan_id': i['vlan_id']}}
+    j={i['vlan_name']: {'vlan_id': i['vlan_id']}}
     x['networks'].update(j)
     mistapi.api.v1.orgs.networktemplates.updateOrgNetworkTemplates(apisession,org_id=nep.config.conf["mist"]["org_id"], networktemplate_id=i["tmpl_id"], body=x)
 

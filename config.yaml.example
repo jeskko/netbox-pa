@@ -12,7 +12,7 @@ mist:
 host: api.eu.mist.com
 token: XXX
 org_id: x-y-z-q
-prefix: nb
+prefix: nb_
 template_mapping:
   - name: abc
     nb_tag: abc
